@@ -16,12 +16,17 @@ import {
 import "pixi.js/advanced-blend-modes";
 
 (async () => {
+  if (!window.localStorage.getItem("show-warning")) {
+    alert("NOTE: Click the labels to toggle parameters.");
+    window.localStorage.setItem("show-warning", "true");
+  }
+
   // Create a new application
   const app = new Application();
 
   // Initialize the application
   await app.init({
-    background: "#88dddd",
+    background: "#aaeeee",
     resizeTo: window,
     useBackBuffer: true,
     resolution: 2,
