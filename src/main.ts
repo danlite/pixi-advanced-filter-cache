@@ -36,35 +36,41 @@ import "pixi.js/advanced-blend-modes";
   // Append the application canvas to the document body
   document.getElementById("pixi-container")!.appendChild(app.canvas);
 
+  // BEGIN minimum working example
+  const bunny = new Sprite(await Assets.load("/assets/bunny.png"));
+  bunny.anchor.set(0.5);
+  bunny.position.set(bunny.width, bunny.height);
   const container = new Container();
-  const containerX = 25;
-  const containerY = 30;
+  const offset = new Point(25, 30);
+  container.position.set(offset.x, offset.y);
   app.stage.addChild(container);
 
-  // Load the bunny texture
-  const texture = await Assets.load("/assets/bunny.png");
-
-  // The layer with the blend mode
   const glow = new Graphics();
-  glow.rect(0, 0, texture.width * 2, texture.height * 2);
+  glow.rect(0, 0, bunny.width * 2, bunny.height * 2);
   glow.fill({ color: 0xff0000 });
-  glow.alpha = 1;
-  container.addChild(glow);
 
-  // Create a bunny Sprite
-  const bunny = new Sprite(texture);
-  bunny.position.set(container.width / 2, container.height / 2);
-  container.addChildAt(bunny, 0);
-  bunny.anchor.set(0.5);
+  container.addChild(bunny);
+  container.addChild(glow);
 
   // The parameters that don't work together
   let blendMode: "overlay" | "add" = "overlay";
   let cacheAsTexture = true;
-  let position: Point = new Point(containerX, containerY);
+  let position: Point = offset;
 
   glow.blendMode = blendMode;
   container.cacheAsTexture(cacheAsTexture);
   container.position = position;
+  // END minimum working example
+
+  // For illustration purposes
+  const outline = new Graphics();
+  outline.rect(0, 0, bunny.width * 2, bunny.height * 2);
+  outline.stroke({ color: 0x000000, width: 2 });
+  container.addChild(outline);
+  const backdrop = new Graphics();
+  backdrop.rect(0, 0, bunny.width * 2, bunny.height * 2);
+  backdrop.fill({ color: 0x00bb00 });
+  container.addChildAt(backdrop, 0);
 
   // Add buttons and labels
   const errorText = new Text({
@@ -73,7 +79,7 @@ import "pixi.js/advanced-blend-modes";
       fill: 0xff0000,
     },
   });
-  errorText.position.set(containerX, containerY + 400);
+  errorText.position.set(offset.x, offset.y + 400);
   app.stage.addChild(errorText);
 
   function updateErrorText() {
@@ -102,7 +108,7 @@ import "pixi.js/advanced-blend-modes";
       : "cacheAsTexture(false)";
     updateErrorText();
   });
-  cacheButton.position.set(containerX, containerY + 100);
+  cacheButton.position.set(offset.x, offset.y + 100);
   app.stage.addChild(cacheButton);
 
   const blendButton = new Text({
@@ -116,7 +122,7 @@ import "pixi.js/advanced-blend-modes";
     blendButton.text = blendMode;
     updateErrorText();
   });
-  blendButton.position.set(containerX, containerY + 200);
+  blendButton.position.set(offset.x, offset.y + 200);
   app.stage.addChild(blendButton);
 
   const positionButton = new Text({
@@ -124,12 +130,12 @@ import "pixi.js/advanced-blend-modes";
   });
   positionButton.eventMode = "static";
   positionButton.on("pointerdown", () => {
-    position = position.x === 0 ? new Point(25, 30) : new Point(0, 0);
+    position = position.x === 0 ? offset : new Point(0, 0);
     container.position.set(position.x, position.y);
     positionButton.text = `position: ${position.x}, ${position.y}`;
     container.updateCacheTexture();
     updateErrorText();
   });
-  positionButton.position.set(containerX, containerY + 300);
+  positionButton.position.set(offset.x, offset.y + 300);
   app.stage.addChild(positionButton);
 })();
